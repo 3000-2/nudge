@@ -16,16 +16,13 @@ Designed to be used by humans and AI agents (Claude Code, Codex CLI) alike.
 ## Install
 
 ```bash
-go install -ldflags "-X main.version=0.1.0" github.com/3000-2/nudge@latest
+curl -fsSL https://raw.githubusercontent.com/3000-2/nudge/main/install.sh | sh
 ```
 
-Or build from source:
+Or with Go:
 
 ```bash
-git clone https://github.com/3000-2/nudge.git
-cd nudge
-go build -ldflags "-X main.version=0.1.0" -o nudge .
-sudo cp nudge /usr/local/bin/
+go install github.com/3000-2/nudge@latest
 ```
 
 ## Usage
