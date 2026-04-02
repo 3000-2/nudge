@@ -3,6 +3,7 @@ set -e
 
 REPO="3000-2/nudge"
 INSTALL_DIR="/usr/local/bin"
+LIB_DIR="/usr/local/lib/nudge"
 BINARY="nudge"
 
 # Colors
@@ -54,17 +55,34 @@ curl -fsSL "$URL" -o "${TMPDIR}/${ARCHIVE}" || fail "download failed"
 # Extract
 tar -xzf "${TMPDIR}/${ARCHIVE}" -C "$TMPDIR" || fail "extract failed"
 
-# Install
+# Install binary
+info "Installing nudge binary..."
 if [ -w "$INSTALL_DIR" ]; then
   mv "${TMPDIR}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
 else
-  info "Requesting sudo to install to ${INSTALL_DIR}..."
+  info "Requesting sudo..."
   sudo mv "${TMPDIR}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
 fi
-
 chmod +x "${INSTALL_DIR}/${BINARY}"
 
-success "nudge ${TAG} installed to ${INSTALL_DIR}/${BINARY}"
+# Install Nudge.app (notification helper with custom icon)
+if [ -d "${TMPDIR}/Nudge.app" ]; then
+  info "Installing Nudge.app..."
+  sudo mkdir -p "$LIB_DIR"
+  sudo rm -rf "${LIB_DIR}/Nudge.app"
+  sudo cp -R "${TMPDIR}/Nudge.app" "${LIB_DIR}/Nudge.app"
+  sudo xattr -cr "${LIB_DIR}/Nudge.app"
 
-# Verify
+  # Register with LaunchServices
+  /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "${LIB_DIR}/Nudge.app" 2>/dev/null || true
+
+  success "Nudge.app installed to ${LIB_DIR}/"
+
+  # Trigger notification permission + verify
+  "${LIB_DIR}/Nudge.app/Contents/MacOS/Nudge" "nudge ${TAG} installed!" 2>/dev/null || true
+else
+  info "Nudge.app not found in archive, using osascript fallback for notifications"
+fi
+
+success "nudge ${TAG} installed to ${INSTALL_DIR}/${BINARY}"
 "${INSTALL_DIR}/${BINARY}" version

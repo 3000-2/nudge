@@ -2,6 +2,10 @@ version: 2
 
 project_name: nudge
 
+before:
+  hooks:
+    - ./swift/build.sh build universal
+
 builds:
   - main: .
     binary: nudge
@@ -16,6 +20,10 @@ builds:
 archives:
   - format: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - src: build/Nudge.app/**/*
+        dst: Nudge.app
+        strip_parent: true
 
 checksum:
   name_template: "checksums.txt"

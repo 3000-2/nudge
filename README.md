@@ -89,6 +89,7 @@ nudge delete abc12345 --json
 | `~/.nudge/reminders.json` | Reminder database |
 | `~/.nudge/logs/` | launchd stdout/stderr logs |
 | `~/Library/LaunchAgents/com.nudge.*.plist` | launchd job definitions |
+| `/usr/local/lib/nudge/Nudge.app` | Notification helper (custom icon) |
 
 ## License
 

@@ -1,25 +1,26 @@
 # nudge — macOS CLI Reminder Tool
 
 ## Overview
-Go CLI that manages reminders using launchd scheduling + osascript native notifications.
-Single binary, no CGo, macOS only.
+Go CLI + Swift notification helper. launchd scheduling + native macOS notifications with custom icon.
+macOS only, no CGo.
 
 ## Quick Reference
 
 ```bash
-# Build
-go build -ldflags "-X main.version=0.1.0" -o nudge .
+# Build everything (Go binary + Swift Nudge.app)
+make build
+
+# Build only Swift helper
+make swift
 
 # Test
-go test ./...
+make test
 
-# Test with coverage
-go test -coverprofile=cover.out ./... && go tool cover -func=cover.out
+# Install (requires sudo)
+make install
 
-# Run
-./nudge add "test" --at 14:00
-./nudge list
-./nudge delete <id>
+# Clean
+make clean
 ```
 
 ## Architecture
@@ -31,19 +32,25 @@ internal/
   store/       — JSON file storage (~/.nudge/) with flock locking + atomic writes
   parser/      — CLI flag parsing (--at/--on/--every/--next → Schedule)
   scheduler/   — launchd plist generation + launchctl load/unload
-  notifier/    — osascript notification via argv (no string interpolation)
+  notifier/    — Nudge.app (Swift) with osascript fallback
   idgen/       — 8-char alphanumeric ID (crypto/rand)
   output/      — Human-readable + JSON formatting
+swift/
+  main.swift   — UNUserNotificationCenter notification sender
+  Info.plist   — App bundle metadata (LSUIElement=true)
+  Assets/      — nudge.icns app icon
+  build.sh     — Builds Nudge.app bundle with swiftc
 ```
 
 ## Key Design Decisions
 
 - **launchd over cron**: Handles missed reminders on wake, macOS native
-- **osascript argv**: Message passed as `on run argv` argument, NOT interpolated into script (prevents injection)
+- **Swift Nudge.app**: Custom icon in notifications via UNUserNotificationCenter, osascript fallback when .app not found
 - **Atomic writes**: Store and plist both use temp file → `os.Rename`
 - **File locking**: `syscall.Flock` on `~/.nudge/.lock` for concurrent safety
 - **Year-less plist**: `StartCalendarInterval` has no Year field — `notify` command checks date match and runs `cleanupOnceReminder` for stale plists
 - **Dependency injection**: Package-level vars in `cmd/root.go` for testability
+- **Ad-hoc codesign**: Required for UNUserNotificationCenter, no developer account needed
 
 ## Runtime Paths
 
@@ -53,11 +60,20 @@ internal/
 | `~/.nudge/logs/` | launchd stdout/stderr per reminder |
 | `~/.nudge/.lock` | File lock for concurrent access |
 | `~/Library/LaunchAgents/com.nudge.<id>.plist` | launchd job per reminder |
+| `/usr/local/lib/nudge/Nudge.app` | Swift notification helper (installed) |
+
+## Notifier Resolution Order
+
+1. `$NUDGE_NOTIFY_APP` env var
+2. `<binary_dir>/../lib/nudge/Nudge.app` (standard install)
+3. `<binary_dir>/Nudge.app` (development)
+4. `/usr/local/lib/nudge/Nudge.app` (hardcoded fallback)
+5. osascript fallback (no custom icon)
 
 ## Conventions
 
 - **Module**: `github.com/3000-2/nudge`
-- **External dependency**: cobra only
+- **External dependency**: cobra only (Go), UserNotifications framework (Swift)
 - **Test style**: Table-driven, `t.TempDir()` for isolation, package-level var override for DI
 - **Error messages**: Lowercase, no period
 - **Schedule types**: `once`, `daily`, `weekly`, `monthly`
@@ -66,7 +82,8 @@ internal/
 ## Coding Rules
 
 - No CGo — pure Go only
-- No shell execution for osascript — always `exec.Command` with argv
+- Notifier: prefer Nudge.app, fallback to osascript
 - Escape XML entities in plist templates via `escapeXML`
 - All store operations must acquire flock before read-modify-write
 - One-time reminders must auto-cleanup (unload plist + mark completed) after notify
+- Swift .app must be ad-hoc signed (`codesign --force --sign -`)
