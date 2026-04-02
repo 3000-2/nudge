@@ -171,7 +171,7 @@ func (s *Store) Delete(id string) (bool, error) {
 
 func (s *Store) ensureDirs() error {
 	for _, dir := range []string{s.baseDir, s.logsDir} {
-		if err := os.MkdirAll(dir, 0o755); err != nil {
+		if err := os.MkdirAll(dir, 0o700); err != nil {
 			return fmt.Errorf("create directory %s: %w", dir, err)
 		}
 	}
@@ -255,6 +255,9 @@ func (s *Store) writeStorageLocked(storage model.StorageFile) error {
 	}
 	if err := tempFile.Close(); err != nil {
 		return fmt.Errorf("close temp storage file: %w", err)
+	}
+	if err := os.Chmod(tempPath, 0o600); err != nil {
+		return fmt.Errorf("chmod storage file: %w", err)
 	}
 
 	if err := os.Rename(tempPath, s.filePath); err != nil {

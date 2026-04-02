@@ -18,7 +18,7 @@ func TestNotifyOneTimeReminderOnCorrectDate(t *testing.T) {
 	env.writePlistFile(plistPath)
 
 	env.seedReminder(model.Reminder{
-		ID:      "once001",
+		ID:      "0nce0001",
 		Message: "Take medicine",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -31,12 +31,12 @@ func TestNotifyOneTimeReminderOnCorrectDate(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	_, _, err := executeCommandResult(t, "test", "notify", "once001")
+	_, _, err := executeCommandResult(t, "test", "notify", "0nce0001")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
 
-	got, err := env.store().Get("once001")
+	got, err := env.store().Get("0nce0001")
 	if err != nil {
 		t.Fatalf("Get returned error: %v", err)
 	}
@@ -64,7 +64,7 @@ func TestNotifyWrongDateCleansUpOnceReminder(t *testing.T) {
 	env.writePlistFile(plistPath)
 
 	env.seedReminder(model.Reminder{
-		ID:      "once002",
+		ID:      "0nce0002",
 		Message: "Wrong day",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -77,12 +77,12 @@ func TestNotifyWrongDateCleansUpOnceReminder(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	_, _, err := executeCommandResult(t, "test", "notify", "once002")
+	_, _, err := executeCommandResult(t, "test", "notify", "0nce0002")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
 
-	got, err := env.store().Get("once002")
+	got, err := env.store().Get("0nce0002")
 	if err != nil {
 		t.Fatalf("Get returned error: %v", err)
 	}
@@ -107,7 +107,7 @@ func TestNotifyAlreadyCompletedReminderIsNoOp(t *testing.T) {
 	env.writePlistFile(plistPath)
 
 	env.seedReminder(model.Reminder{
-		ID:      "done0001",
+		ID:      "d0ne0001",
 		Message: "Already done",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -120,12 +120,12 @@ func TestNotifyAlreadyCompletedReminderIsNoOp(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	_, _, err := executeCommandResult(t, "test", "notify", "done0001")
+	_, _, err := executeCommandResult(t, "test", "notify", "d0ne0001")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
 
-	got, err := env.store().Get("done0001")
+	got, err := env.store().Get("d0ne0001")
 	if err != nil {
 		t.Fatalf("Get returned error: %v", err)
 	}
@@ -143,7 +143,7 @@ func TestNotifyAlreadyCompletedReminderIsNoOp(t *testing.T) {
 func TestNotifyMissingReminderIsNoOp(t *testing.T) {
 	setupCommandTestEnv(t, time.Date(2026, time.April, 1, 12, 0, 0, 0, time.Local))
 
-	_, _, err := executeCommandResult(t, "test", "notify", "missing")
+	_, _, err := executeCommandResult(t, "test", "notify", "miss0000")
 	if err != nil {
 		t.Fatalf("expected missing reminder notify to be no-op, got %v", err)
 	}
@@ -199,7 +199,7 @@ func TestCleanupOnceReminderIgnoresMissingReminder(t *testing.T) {
 	env := setupCommandTestEnv(t, time.Date(2026, time.April, 1, 12, 0, 0, 0, time.Local))
 	plistPath := filepath.Join(env.agentsDir, "com.nudge.clean001.plist")
 
-	if err := cleanupOnceReminder(env.store(), "missing", plistPath, env.now); err != nil {
+	if err := cleanupOnceReminder(env.store(), "miss0000", plistPath, env.now); err != nil {
 		t.Fatalf("cleanupOnceReminder returned error: %v", err)
 	}
 }
@@ -240,11 +240,11 @@ func TestCleanupOnceReminderReturnsRemoveError(t *testing.T) {
 func TestNotifyMissingReminderStillAbsent(t *testing.T) {
 	env := setupCommandTestEnv(t, time.Date(2026, time.April, 1, 12, 0, 0, 0, time.Local))
 
-	_, _, err := executeCommandResult(t, "test", "notify", "missing-again")
+	_, _, err := executeCommandResult(t, "test", "notify", "miss1111")
 	if err != nil {
 		t.Fatalf("expected missing reminder notify to be no-op, got %v", err)
 	}
-	if _, err := env.store().Get("missing-again"); !errors.Is(err, store.ErrNotFound) {
+	if _, err := env.store().Get("miss1111"); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
 	}
 }

@@ -17,8 +17,8 @@ func TestListEmptyAndShowMissing(t *testing.T) {
 	}
 
 	root := NewRootCmd("test")
-	root.SetArgs([]string{"show", "missing"})
-	if err := root.Execute(); err == nil || !strings.Contains(err.Error(), `reminder "missing" not found`) {
+	root.SetArgs([]string{"show", "miss0000"})
+	if err := root.Execute(); err == nil || !strings.Contains(err.Error(), `reminder "miss0000" not found`) {
 		t.Fatalf("expected not found error, got %v", err)
 	}
 }

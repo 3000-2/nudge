@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/3000-2/nudge/internal/idgen"
 	"github.com/3000-2/nudge/internal/output"
 	"github.com/3000-2/nudge/internal/store"
 )
@@ -18,6 +19,9 @@ func newDeleteCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := args[0]
+			if !idgen.IsValid(id) {
+				return fmt.Errorf("invalid reminder id %q", id)
+			}
 
 			st, err := newStore()
 			if err != nil {

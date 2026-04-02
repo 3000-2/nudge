@@ -120,7 +120,7 @@ func TestAddCreatesReminderForSchedules(t *testing.T) {
 			if reminder.ID != env.generatedID {
 				t.Fatalf("expected id %q, got %q", env.generatedID, reminder.ID)
 			}
-			if reminder.PlistPath != filepath.Join(env.agentsDir, "com.nudge.testid01.plist") {
+			if reminder.PlistPath != filepath.Join(env.agentsDir, "com.nudge.ab12cd34.plist") {
 				t.Fatalf("unexpected plist path %q", reminder.PlistPath)
 			}
 			if _, err := os.Stat(reminder.PlistPath); err != nil {
@@ -212,7 +212,7 @@ func TestAddRollbackOnRenderWriteAndLoadFailures(t *testing.T) {
 				t.Fatalf("expected unloadPlist during rollback, got %v", env.unloaded)
 			}
 			if tt.expectRemoved {
-				plistPath := filepath.Join(env.agentsDir, "com.nudge.testid01.plist")
+				plistPath := filepath.Join(env.agentsDir, "com.nudge.ab12cd34.plist")
 				if _, err := os.Stat(plistPath); !os.IsNotExist(err) {
 					t.Fatalf("expected plist to be removed, stat err=%v", err)
 				}

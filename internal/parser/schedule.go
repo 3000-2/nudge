@@ -71,6 +71,9 @@ func parseOnSchedule(dateText string, hour, minute int, now time.Time, loc *time
 	if !target.After(now) {
 		return model.Schedule{}, fmt.Errorf("scheduled time must be in the future")
 	}
+	if target.After(now.AddDate(1, 0, 0)) {
+		return model.Schedule{}, fmt.Errorf("scheduled date must be within 1 year")
+	}
 
 	dateValue := target.Format("2006-01-02")
 	return model.Schedule{
@@ -152,8 +155,8 @@ func parseImplicitOnce(hour, minute int, now time.Time, loc *time.Location) mode
 
 func parseClock(value string) (int, int, error) {
 	parts := strings.Split(strings.TrimSpace(value), ":")
-	if len(parts) != 2 {
-		return 0, 0, fmt.Errorf("--at must use HH:MM in 24h format")
+	if len(parts) != 2 || len(parts[0]) != 2 || len(parts[1]) != 2 {
+		return 0, 0, fmt.Errorf("--at must use HH:MM in 24h format (e.g., 09:05)")
 	}
 
 	hour, err := strconv.Atoi(parts[0])

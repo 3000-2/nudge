@@ -20,7 +20,7 @@ func TestDeleteExistingReminder(t *testing.T) {
 
 	date := "2026-04-02"
 	env.seedReminder(model.Reminder{
-		ID:      "delete01",
+		ID:      "de1ete01",
 		Message: "Delete me",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -33,17 +33,17 @@ func TestDeleteExistingReminder(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	stdout, _, err := executeCommandResult(t, "test", "delete", "delete01")
+	stdout, _, err := executeCommandResult(t, "test", "delete", "de1ete01")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
-	if !strings.Contains(stdout, "Deleted reminder delete01") {
+	if !strings.Contains(stdout, "Deleted reminder de1ete01") {
 		t.Fatalf("unexpected delete output:\n%s", stdout)
 	}
 	if len(env.unloaded) != 1 || env.unloaded[0] != plistPath {
 		t.Fatalf("expected unloadPlist to be called with %q, got %v", plistPath, env.unloaded)
 	}
-	if _, err := env.store().Get("delete01"); !errors.Is(err, store.ErrNotFound) {
+	if _, err := env.store().Get("de1ete01"); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("expected ErrNotFound after delete, got %v", err)
 	}
 	if _, err := os.Stat(plistPath); !os.IsNotExist(err) {
@@ -54,8 +54,8 @@ func TestDeleteExistingReminder(t *testing.T) {
 func TestDeleteNonExistentReminder(t *testing.T) {
 	setupCommandTestEnv(t, time.Date(2026, time.April, 1, 10, 0, 0, 0, time.Local))
 
-	_, _, err := executeCommandResult(t, "test", "delete", "missing")
-	if err == nil || !strings.Contains(err.Error(), `reminder "missing" not found`) {
+	_, _, err := executeCommandResult(t, "test", "delete", "miss0000")
+	if err == nil || !strings.Contains(err.Error(), `reminder "miss0000" not found`) {
 		t.Fatalf("expected not found error, got %v", err)
 	}
 }
@@ -67,7 +67,7 @@ func TestDeleteJSONOutput(t *testing.T) {
 
 	date := "2026-04-03"
 	env.seedReminder(model.Reminder{
-		ID:      "delete02",
+		ID:      "de1ete02",
 		Message: "Delete me too",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -80,7 +80,7 @@ func TestDeleteJSONOutput(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	stdout, _, err := executeCommandResult(t, "test", "delete", "delete02", "--json")
+	stdout, _, err := executeCommandResult(t, "test", "delete", "de1ete02", "--json")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
@@ -89,7 +89,7 @@ func TestDeleteJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(stdout), &payload); err != nil {
 		t.Fatalf("failed to unmarshal delete json output: %v\n%s", err, stdout)
 	}
-	if payload["id"] != "delete02" {
+	if payload["id"] != "de1ete02" {
 		t.Fatalf("expected id delete02, got %#v", payload["id"])
 	}
 	if payload["deleted"] != true {
@@ -103,7 +103,7 @@ func TestDeleteIgnoresMissingPlistFile(t *testing.T) {
 
 	date := "2026-04-04"
 	env.seedReminder(model.Reminder{
-		ID:      "delete03",
+		ID:      "de1ete03",
 		Message: "Missing plist",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -116,11 +116,11 @@ func TestDeleteIgnoresMissingPlistFile(t *testing.T) {
 		PlistPath: plistPath,
 	})
 
-	stdout, _, err := executeCommandResult(t, "test", "delete", "delete03")
+	stdout, _, err := executeCommandResult(t, "test", "delete", "de1ete03")
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
-	if !strings.Contains(stdout, "Deleted reminder delete03") {
+	if !strings.Contains(stdout, "Deleted reminder de1ete03") {
 		t.Fatalf("unexpected delete output:\n%s", stdout)
 	}
 }

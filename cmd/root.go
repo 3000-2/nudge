@@ -14,6 +14,8 @@ import (
 	"github.com/3000-2/nudge/internal/store"
 )
 
+// Package-level vars for dependency injection. Overridden in tests.
+// WARNING: Tests in this package must NOT use t.Parallel() — these globals are shared.
 var (
 	nowFunc = func() time.Time {
 		return time.Now().In(time.Local)

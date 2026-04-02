@@ -39,8 +39,8 @@ func TestShowExistingReminder(t *testing.T) {
 func TestShowNonExistentReminder(t *testing.T) {
 	setupCommandTestEnv(t, time.Date(2026, time.April, 1, 10, 0, 0, 0, time.Local))
 
-	_, _, err := executeCommandResult(t, "test", "show", "missing")
-	if err == nil || !strings.Contains(err.Error(), `reminder "missing" not found`) {
+	_, _, err := executeCommandResult(t, "test", "show", "miss0000")
+	if err == nil || !strings.Contains(err.Error(), `reminder "miss0000" not found`) {
 		t.Fatalf("expected not found error, got %v", err)
 	}
 }

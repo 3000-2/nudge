@@ -26,7 +26,7 @@ func TestListActiveRemindersOnlyByDefault(t *testing.T) {
 		CreatedAt: env.now,
 	})
 	env.seedReminder(model.Reminder{
-		ID:      "done0001",
+		ID:      "d0ne0001",
 		Message: "Done task",
 		Schedule: model.Schedule{
 			Type:   model.ScheduleTypeOnce,
@@ -42,7 +42,7 @@ func TestListActiveRemindersOnlyByDefault(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
-	if !strings.Contains(stdout, "active01") || strings.Contains(stdout, "done0001") {
+	if !strings.Contains(stdout, "active01") || strings.Contains(stdout, "d0ne0001") {
 		t.Fatalf("unexpected list output:\n%s", stdout)
 	}
 }
@@ -65,7 +65,7 @@ func TestListAllIncludesCompleted(t *testing.T) {
 			CreatedAt: env.now,
 		},
 		{
-			ID:      "done0001",
+			ID:      "d0ne0001",
 			Message: "Done task",
 			Schedule: model.Schedule{
 				Type:   model.ScheduleTypeOnce,
@@ -84,7 +84,7 @@ func TestListAllIncludesCompleted(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Execute returned error: %v", err)
 	}
-	for _, want := range []string{"active01", "done0001"} {
+	for _, want := range []string{"active01", "d0ne0001"} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("expected output to contain %q\n%s", want, stdout)
 		}

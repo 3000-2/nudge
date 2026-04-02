@@ -31,7 +31,7 @@ func setupCommandTestEnv(t *testing.T, now time.Time) *commandTestEnv {
 		t:           t,
 		storeDir:    t.TempDir(),
 		now:         now,
-		generatedID: "testid01",
+		generatedID: "ab12cd34",
 		written:     map[string][]byte{},
 	}
 	env.agentsDir = filepath.Join(env.storeDir, "LaunchAgents")

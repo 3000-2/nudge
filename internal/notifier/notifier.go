@@ -59,7 +59,11 @@ func defaultResolveNotifyApp() string {
 }
 
 func isValidApp(appPath string) bool {
-	binary := filepath.Join(appPath, "Contents", "MacOS", "Nudge")
+	cleaned := filepath.Clean(appPath)
+	if !filepath.IsAbs(cleaned) {
+		return false
+	}
+	binary := filepath.Join(cleaned, "Contents", "MacOS", "Nudge")
 	info, err := os.Stat(binary)
 	if err != nil {
 		return false
@@ -82,6 +86,9 @@ func Notify(message string) error {
 	return notifyOsascript(message)
 }
 
+// SECURITY: message is passed as a separate argv argument to osascript, NOT interpolated
+// into the script body. This prevents AppleScript injection. Do NOT refactor to use
+// fmt.Sprintf or string concatenation with the script template.
 func notifyOsascript(message string) error {
 	script := `on run argv
 	display notification (item 1 of argv) with title "⏰ Nudge" sound name "Glass"

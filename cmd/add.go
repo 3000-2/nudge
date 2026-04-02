@@ -25,6 +25,12 @@ func newAddCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			message := args[0]
+			if len(message) == 0 {
+				return fmt.Errorf("message cannot be empty")
+			}
+			if len(message) > 1000 {
+				return fmt.Errorf("message too long (max 1000 characters, got %d)", len(message))
+			}
 			now := nowFunc()
 
 			schedule, err := parser.ParseSchedule(at, on, every, next, now)

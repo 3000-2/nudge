@@ -12,6 +12,19 @@ const (
 	maxAttempts = 256
 )
 
+// IsValid checks that an ID matches the expected format: 8 lowercase alphanumeric chars.
+func IsValid(id string) bool {
+	if len(id) != idLength {
+		return false
+	}
+	for _, c := range id {
+		if !((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+			return false
+		}
+	}
+	return true
+}
+
 func GenerateUnique(exists func(string) (bool, error)) (string, error) {
 	for attempt := 0; attempt < maxAttempts; attempt++ {
 		id, err := generate()
