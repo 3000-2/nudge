@@ -1,22 +1,22 @@
 #!/bin/sh
 set -e
 
+REPO="3000-2/nudge"
+INSTALL_DIR="/usr/local/bin"
+LIB_DIR="/usr/local/lib/nudge"
+BINARY="nudge"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+info() { printf "${CYAN}▸${NC} %s\n" "$1"; }
+success() { printf "${GREEN}✓${NC} %s\n" "$1"; }
+fail() { printf "${RED}✗${NC} %s\n" "$1" >&2; exit 1; }
+
 main() {
-  REPO="3000-2/nudge"
-  INSTALL_DIR="/usr/local/bin"
-  LIB_DIR="/usr/local/lib/nudge"
-  BINARY="nudge"
-
-  # Colors
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  CYAN='\033[0;36m'
-  NC='\033[0m'
-
-  info() { printf "${CYAN}▸${NC} %s\n" "$1"; }
-  success() { printf "${GREEN}✓${NC} %s\n" "$1"; }
-  fail() { printf "${RED}✗${NC} %s\n" "$1" >&2; exit 1; }
-
   # macOS only
   OS="$(uname -s)"
   if [ "$OS" != "Darwin" ]; then
