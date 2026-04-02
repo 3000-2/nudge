@@ -25,6 +25,15 @@ Or with Go:
 go install github.com/3000-2/nudge@latest
 ```
 
+Or build from source:
+
+```bash
+git clone https://github.com/3000-2/nudge.git
+cd nudge
+go build -ldflags "-X main.version=0.1.0" -o nudge .
+sudo cp nudge /usr/local/bin/
+```
+
 ## Usage
 
 ```bash
